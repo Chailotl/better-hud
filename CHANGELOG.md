@@ -1,0 +1,9 @@
+- A durability meter will show up to the left of the armor bar for each piece of armor you wear.
+- Status effect icons show their remaining time.
+- Your XP bar and hunger bar is no longer hidden when mounted.
+  - The jump bar reappears when actually jumping.
+- Fire overlay is lowered.
+  - It is removed completely if you have fire resistance, or you're in creative mode.
+- Chat is raised when wearing armor to not cover the armor bar.
+- Lava is easier to see through in creative mode.
+- Night vision effect is no longer an epilepsy hazard.

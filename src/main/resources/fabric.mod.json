@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "better_hud",
+	"version": "${version}",
+	"name": "${name}",
+	"description": "Makes the HUD better with quality tweaks and conveniences.",
+	"authors": [
+		"Chai"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/chais-better-hud/",
+		"sources": "https://github.com/chailotl/better-hud",
+		"issues": "https://github.com/chailotl/better-hud/issues"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/SuZb3aJUCx"
+			}
+		}
+	},
+	"license": "LGPL-3.0",
+	"icon": "assets/better_hud/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": [
+			"com.chailotl.better_hud.Main"
+		]
+	},
+	"mixins": [
+		"better_hud.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": "~1.20",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

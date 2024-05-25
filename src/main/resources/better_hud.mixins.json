@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"package": "com.chailotl.better_hud.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"client": [
+		"InjectBackgroundRenderer",
+		"InjectGameRenderer",
+		"InjectInGameOverlayRenderer",
+		"MixinInGameHud",
+		"ModifyChatHud"
+	]
+}
