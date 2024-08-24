@@ -1,5 +1,6 @@
 package com.chailotl.better_hud.mixin;
 
+import com.chailotl.better_hud.Main;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
@@ -18,6 +19,8 @@ public class InjectGameRenderer
 	)
 	private static void removeEpilepsy(LivingEntity livingEntity, float tickDelta, CallbackInfoReturnable<Float> info)
 	{
+		if (!Main.CONFIG.removeNightVisionFlickering()) { return; }
+
 		float f = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration() - tickDelta;
 		info.setReturnValue(f > 200f ? 1f : f / 200f);
 	}

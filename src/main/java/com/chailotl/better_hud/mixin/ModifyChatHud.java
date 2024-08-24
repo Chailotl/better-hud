@@ -22,6 +22,8 @@ public class ModifyChatHud
 	)
 	private int offsetChat(int original)
 	{
+		if (!Main.CONFIG.raiseChatWhenWearingArmor()) { return original; }
+
 		ClientPlayerEntity player = client.player;
 		return original + (player.getArmor() == 0 || Main.shouldHide(player) ? 0 : 10);
 	}

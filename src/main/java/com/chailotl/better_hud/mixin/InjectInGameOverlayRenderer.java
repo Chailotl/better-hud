@@ -1,5 +1,6 @@
 package com.chailotl.better_hud.mixin;
 
+import com.chailotl.better_hud.Main;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,9 +19,15 @@ public class InjectInGameOverlayRenderer
 	)
 	private static void offsetFire(MinecraftClient client, MatrixStack matrices, CallbackInfo ci)
 	{
-		double offset = -0.2;
-		if (client.player.isCreative() ||
-			client.player.hasStatusEffect(StatusEffects.FIRE_RESISTANCE))
+		double offset = 0;
+
+		if (Main.CONFIG.lowerFireOverlay())
+		{
+			offset = -0.2;
+		}
+
+		if (Main.CONFIG.removeFireOverlayWhenImmune() && (client.player.isCreative() ||
+			client.player.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)))
 		{
 			offset = -10;
 		}

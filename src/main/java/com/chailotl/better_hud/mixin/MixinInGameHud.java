@@ -1,5 +1,6 @@
 package com.chailotl.better_hud.mixin;
 
+import com.chailotl.better_hud.ConfigModel;
 import com.chailotl.better_hud.Main;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -30,13 +31,10 @@ public abstract class MixinInGameHud
 	private MinecraftClient client;
 	@Shadow
 	private int scaledWidth;
-	@Shadow public abstract TextRenderer getTextRenderer();
-
-	@Unique
-	private boolean shouldHide(ClientPlayerEntity player)
-	{
-		return player.isCreative() || player.isSpectator();
-	}
+	@Shadow
+	public abstract TextRenderer getTextRenderer();
+	@Shadow
+	protected abstract int getHeartCount(LivingEntity entity);
 
 	@Inject(
 		method = "render",
@@ -44,10 +42,19 @@ public abstract class MixinInGameHud
 	)
 	private void renderArmorDurability(DrawContext context, float tickDelta, CallbackInfo ci)
 	{
+		if (Main.CONFIG.miniDurabilityBars() == ConfigModel.MiniDurabilityBarsPosition.NONE) { return; }
+
 		if (Main.shouldHide(client.player)) { return; }
 
-		int x = client.getWindow().getScaledWidth() / 2 - 108;
-		int y = client.getWindow().getScaledHeight() - 51;
+		int x = client.getWindow().getScaledWidth() / 2 - 9;
+		int y = client.getWindow().getScaledHeight() - 50;
+
+		if (Main.CONFIG.miniDurabilityBars() == ConfigModel.MiniDurabilityBarsPosition.LEFT)
+		{
+			x = client.getWindow().getScaledWidth() / 2 - 108;
+			y = client.getWindow().getScaledHeight() - 51;
+		}
+
 		for (ItemStack armor : client.player.getArmorItems())
 		{
 			y -= 3;
@@ -73,6 +80,8 @@ public abstract class MixinInGameHud
 	)
 	private void showJumpBarWhenJumping(JumpingMount mount, DrawContext context, int x, CallbackInfo ci)
 	{
+		if (!Main.CONFIG.showXpBarWhenMounted()) { return; }
+
 		if (client.player.getMountJumpStrength() == 0 &&
 			!client.player.isCreative() &&
 			client.interactionManager.hasExperienceBar())
@@ -92,6 +101,11 @@ public abstract class MixinInGameHud
 	)
 	private int showHungerBarWhenMounted(InGameHud hud, LivingEntity entity)
 	{
+		if (!Main.CONFIG.showHungerBarWhenMounted())
+		{
+			return getHeartCount(entity);
+		}
+
 		return 0;
 	}
 
@@ -101,6 +115,8 @@ public abstract class MixinInGameHud
 	)
 	private int raiseMountHealthHeight(int original)
 	{
+		if (!Main.CONFIG.showHungerBarWhenMounted()) { return original; }
+
 		return original + (client.player != null && client.player.isCreative() ? 0 : 10);
 	}
 
@@ -126,6 +142,8 @@ public abstract class MixinInGameHud
 	)
 	private void drawText(DrawContext context, CallbackInfo ci, @Local StatusEffectInstance effect, @Local(ordinal = 2) int x, @Local(ordinal = 3) int y)
 	{
+		if (!Main.CONFIG.statusEffectIconTimers()) { return; }
+
 		context.drawCenteredTextWithShadow(getTextRenderer(), ticksToTime(effect.getDuration()), x + 12, y + 25, Colors.GRAY);
 	}
 }

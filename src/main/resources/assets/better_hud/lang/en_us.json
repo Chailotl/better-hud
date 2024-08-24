@@ -1,0 +1,15 @@
+{
+	"text.config.better_hud.title": "Chai's Better HUD Config",
+	"text.config.better_hud.option.miniDurabilityBars": "Mini Durability Bars",
+	"text.config.better_hud.option.statusEffectIconTimers": "Status Effect Icon Timers",
+	"text.config.better_hud.option.showXpBarWhenMounted": "Show XP Bar When Mounted",
+	"text.config.better_hud.option.showHungerBarWhenMounted": "Show Hunger Bar When Mounted",
+	"text.config.better_hud.option.lowerFireOverlay": "Lower Fire Overlay",
+	"text.config.better_hud.option.removeFireOverlayWhenImmune": "Remove Fire Overlay When Immune",
+	"text.config.better_hud.option.raiseChatWhenWearingArmor": "Raise Chat When Wearing Armor",
+	"text.config.better_hud.option.creativeModeLavaVision": "Creative Mode Lava Vision",
+	"text.config.better_hud.option.removeNightVisionFlickering": "Remove Night Vision Flickering",
+	"text.config.better_hud.enum.miniDurabilityBarsPosition.none": "None",
+	"text.config.better_hud.enum.miniDurabilityBarsPosition.center": "Center",
+	"text.config.better_hud.enum.miniDurabilityBarsPosition.left": "Left"
+}
