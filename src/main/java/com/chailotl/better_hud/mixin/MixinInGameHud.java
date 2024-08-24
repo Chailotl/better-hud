@@ -126,7 +126,6 @@ public abstract class MixinInGameHud
 	)
 	private void drawText(DrawContext context, CallbackInfo ci, @Local StatusEffectInstance effect, @Local(ordinal = 2) int x, @Local(ordinal = 3) int y)
 	{
-
 		context.drawCenteredTextWithShadow(getTextRenderer(), ticksToTime(effect.getDuration()), x + 12, y + 25, Colors.GRAY);
 	}
 }
