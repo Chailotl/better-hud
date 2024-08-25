@@ -3,25 +3,23 @@ package com.chailotl.better_hud.mixin;
 import com.chailotl.better_hud.ConfigModel;
 import com.chailotl.better_hud.Main;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Colors;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud
@@ -30,9 +28,9 @@ public abstract class MixinInGameHud
 	@Shadow
 	private MinecraftClient client;
 	@Shadow
-	private int scaledWidth;
-	@Shadow
 	public abstract TextRenderer getTextRenderer();
+	@Shadow
+	public abstract void renderExperienceBar(DrawContext context, int x);
 	@Shadow
 	protected abstract int getHeartCount(LivingEntity entity);
 
@@ -40,7 +38,7 @@ public abstract class MixinInGameHud
 		method = "render",
 		at = @At(value = "TAIL")
 	)
-	private void renderArmorDurability(DrawContext context, float tickDelta, CallbackInfo ci)
+	private void renderArmorDurability(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
 	{
 		if (Main.CONFIG.miniDurabilityBars() == ConfigModel.MiniDurabilityBarsPosition.NONE) { return; }
 
@@ -73,6 +71,14 @@ public abstract class MixinInGameHud
 		}
 	}
 
+	@Unique
+	private boolean shouldRenderXpBar()
+	{
+		return client.player.getMountJumpStrength() == 0 &&
+			!client.player.isCreative() &&
+			client.interactionManager.hasExperienceBar();
+	}
+
 	@Inject(
 		method = "renderMountJumpBar",
 		at = @At(value = "HEAD"),
@@ -82,13 +88,25 @@ public abstract class MixinInGameHud
 	{
 		if (!Main.CONFIG.showXpBarWhenMounted()) { return; }
 
-		if (client.player.getMountJumpStrength() == 0 &&
-			!client.player.isCreative() &&
-			client.interactionManager.hasExperienceBar())
+		if (shouldRenderXpBar())
 		{
-			int i = scaledWidth / 2 - 91;
-			((InGameHud)(Object)this).renderExperienceBar(context, i);
+			renderExperienceBar(context, x);
 			ci.cancel();
+		}
+	}
+
+	@Inject(
+			method = "shouldRenderExperience",
+			at = @At(value = "HEAD"),
+			cancellable = true
+	)
+	private void fixXpLevel(CallbackInfoReturnable<Boolean> cir)
+	{
+		if (!Main.CONFIG.showXpBarWhenMounted()) { return; }
+
+		if (shouldRenderXpBar())
+		{
+			cir.setReturnValue(true);
 		}
 	}
 
@@ -137,12 +155,12 @@ public abstract class MixinInGameHud
 		method = "renderStatusEffectOverlay",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/texture/StatusEffectSpriteManager;getSprite(Lnet/minecraft/entity/effect/StatusEffect;)Lnet/minecraft/client/texture/Sprite;"
+			target = "Lnet/minecraft/client/texture/StatusEffectSpriteManager;getSprite(Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/client/texture/Sprite;"
 		)
 	)
-	private void drawText(DrawContext context, CallbackInfo ci, @Local StatusEffectInstance effect, @Local(ordinal = 2) int x, @Local(ordinal = 3) int y)
+	private void drawText(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci, @Local StatusEffectInstance effect, @Local(ordinal = 2) int x, @Local(ordinal = 3) int y)
 	{
-		if (!Main.CONFIG.statusEffectIconTimers()) { return; }
+		if (!Main.CONFIG.statusEffectIconTimers() || effect.isInfinite()) { return; }
 
 		context.drawCenteredTextWithShadow(getTextRenderer(), ticksToTime(effect.getDuration()), x + 12, y + 25, Colors.GRAY);
 	}

@@ -2,9 +2,9 @@ package com.chailotl.better_hud.mixin;
 
 import com.chailotl.better_hud.Main;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
