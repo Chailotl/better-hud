@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.JumpingMount;
@@ -34,11 +35,19 @@ public abstract class MixinInGameHud
 	@Shadow
 	protected abstract int getHeartCount(LivingEntity entity);
 
+	@Shadow @Final private LayeredDrawer layeredDrawer;
+
 	@Inject(
-		method = "render",
+		method = "<init>",
 		at = @At(value = "TAIL")
 	)
-	private void renderArmorDurability(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
+	private void addLayerDrawer(MinecraftClient client, CallbackInfo ci)
+	{
+		layeredDrawer.addSubDrawer(new LayeredDrawer().addLayer(this::renderArmorDurability), () -> !client.options.hudHidden);
+	}
+
+	@Unique
+	private void renderArmorDurability(DrawContext context, RenderTickCounter tickCounter)
 	{
 		if (Main.CONFIG.miniDurabilityBars() == ConfigModel.MiniDurabilityBarsPosition.NONE) { return; }
 
